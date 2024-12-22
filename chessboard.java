@@ -20,8 +20,9 @@ public class chessboard implements ActionListener {
 
         for (int col = 0; col < 8; col++) {
             for (int row = 0; row < 5; row++) {
-                JButton cell = new JButton();
+                JPanel cell = new JPanel();
                 cell.setBackground((row + col) % 2 == 0 ? Color.WHITE : Color.WHITE);
+                cell.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 boardframe.add(cell);
             }
         }
