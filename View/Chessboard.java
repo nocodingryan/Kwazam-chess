@@ -1,20 +1,18 @@
 package View;
 
 import Model.*;
-import Controller.*;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.HashSet;
 import java.util.Set;
+import javax.swing.*;
 
 public class Chessboard extends JFrame {
 
     private JButton[][] boardButtons;
-    private chessModel model;
+    private ChessModel model;
 
 
-    public Chessboard(chessModel model) {
+    public Chessboard(ChessModel model) {
         this.model = model;
         this.boardButtons = new JButton[model.getBoardWidth()][model.getBoardHeight()];
 
@@ -42,7 +40,7 @@ public class Chessboard extends JFrame {
         for (int i = 0; i < model.getBoardWidth(); i++) {
             for (int j = 0; j < model.getBoardHeight(); j++) {
                 JButton button = boardButtons[i][j];
-                chesspiece piece = model.getPiece(i, j);
+                Chesspiece piece = model.getPiece(i, j);
                 if (piece != null) {
                     button.setIcon(piece.getImage());
                 } else {
@@ -59,7 +57,7 @@ public class Chessboard extends JFrame {
             boardButtons[pos.getX()][pos.getY()].setBackground(Color.YELLOW);
         }
     }
-
+    
     public void addBoardClickListener(ActionListener listener) {
         for (int i = 0; i < model.getBoardWidth(); i++) {
             for (int j = 0; j < model.getBoardHeight(); j++) {

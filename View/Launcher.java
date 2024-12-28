@@ -22,7 +22,7 @@ public class Launcher extends JFrame {
         launchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                chessModel model = new chessModel();
+                ChessModel model = new ChessModel();
                 Chessboard view = new Chessboard(model);
                 view.setVisible(true); // Display the chessboard
             }

@@ -4,15 +4,13 @@ import Model.*;
 import View.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashSet;
-import java.util.Set;
 
 public class Controller {
-    private chessModel model;
+    private ChessModel model;
     private Chessboard view;
     private Position selectedPosition = null;
     
-    public Controller(chessModel model, Chessboard view) {
+    public Controller(ChessModel model, Chessboard view) {
         this.model = model;
         this.view = view;
 
@@ -30,15 +28,15 @@ public class Controller {
 
             if (selectedPosition == null) {
                 // Select a piece
-                chesspiece piece = model.getPiece(col, row);
+                Chesspiece piece = model.getPiece(col, row);
                 if (piece != null && piece.getColor().equals(model.getCurrentPlayer())) {
                     selectedPosition = new Position(col, row);
-                    view.highlightValidMoves(piece.calculateValidMoves(model));
+                    view.highlightValidMoves(piece.ifValidMove(model));
                 }
             } else {
                 // Move selected piece
                 Position target = new Position(col, row);
-                chesspiece selectedPiece = model.getPiece(selectedPosition.getX(), selectedPosition.getY());
+                Chesspiece selectedPiece = model.getPiece(selectedPosition.getX(), selectedPosition.getY());
                 if (selectedPiece != null && model.movePiece(selectedPiece, target)) {
                     model.switchSides();
                 }
@@ -47,6 +45,7 @@ public class Controller {
             }
         }
     }
+    
 }
 
 
