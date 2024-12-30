@@ -1,14 +1,14 @@
 package View;
 
-import Model.*;
-import Controller.*;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 
 public class Launcher extends JFrame {
 
     private static JFrame popupframe;
+    private JButton launchButton;
+    private JButton rulesButton;
 
     public Launcher() {
         setTitle("Kwazam Chess Launcher");
@@ -17,20 +17,12 @@ public class Launcher extends JFrame {
         setSize(500, 500);
         setLocation(800, 350);
 
-        JButton launchButton = new JButton("Play Kwazam Chess");
+        launchButton = new JButton("Play Kwazam Chess");
         frame.add(launchButton);
-        launchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ChessModel model = new ChessModel();
-                Chessboard view = new Chessboard(model);
-                view.setVisible(true); // Display the chessboard
-            }
-        });
-
-        JButton rulesbutton = new JButton("Rules");
-        frame.add(rulesbutton);
-        rulesbutton.addActionListener(new ActionListener() {
+        
+        rulesButton = new JButton("Rules");
+        frame.add(rulesButton);
+        rulesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 showRulesWindow();
@@ -39,10 +31,9 @@ public class Launcher extends JFrame {
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
-
     }
 
-        private static void showRulesWindow() {
+    private static void showRulesWindow() {
         popupframe = new JFrame("Rules");
         popupframe.setSize(400, 400);
         popupframe.setLayout(new BorderLayout());
@@ -53,7 +44,8 @@ public class Launcher extends JFrame {
         rules.setBackground(popupframe.getBackground());
         popupframe.add(new JScrollPane(rules), BorderLayout.NORTH);
         popupframe.setVisible(true);
-
-
+    }
+    public JButton getLaunchButton() {
+        return launchButton;
     }
 }

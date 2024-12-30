@@ -1,67 +1,55 @@
 package View;
 
-import Model.*;
+import Model.ChessModel;
+import Model.Chesspiece;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.util.Set;
 import javax.swing.*;
 
 public class Chessboard extends JFrame {
 
-    private JButton[][] boardButtons;
-    private ChessModel model;
+    private JLabel[][] boardLabels;
+    private int height = 8; // Number of rows
+    private int width = 5;  // Number of columns
 
-
-    public Chessboard(ChessModel model) {
-        this.model = model;
-        this.boardButtons = new JButton[model.getBoardWidth()][model.getBoardHeight()];
-
+    public Chessboard() {
+        this.boardLabels = new JLabel[height][width];
         setTitle("Kwazam Chess");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(500, 800);
-        setLayout(new GridLayout(model.getBoardWidth(), model.getBoardHeight()));
-
-        initializeBoard();
+        setLayout(new GridLayout(height, width));
     }
 
-    private void initializeBoard() {
-        for (int i = 0; i < model.getBoardWidth(); i++) {
-            for (int j = 0; j < model.getBoardHeight(); j++) {
-                JButton button = new JButton();
-                button.setActionCommand(i + "," + j);
-                boardButtons[i][j] = button;
-                add(button);
-            }
-        }
-        updateBoard();
-    }
+    public void initializeBoard(ChessModel model) {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                JLabel label = new JLabel();
+                label.setHorizontalAlignment(SwingConstants.CENTER);
+                label.setVerticalAlignment(SwingConstants.CENTER);
 
-    public void updateBoard() {
-        for (int i = 0; i < model.getBoardWidth(); i++) {
-            for (int j = 0; j < model.getBoardHeight(); j++) {
-                JButton button = boardButtons[i][j];
+                // Add a checkerboard background
+                if ((i + j) % 2 == 0) {
+                    label.setBackground(Color.WHITE);
+                } else {
+                    label.setBackground(Color.GRAY);
+                }
+
+                label.setOpaque(true);
                 Chesspiece piece = model.getPiece(i, j);
                 if (piece != null) {
-                    button.setIcon(piece.getImage());
-                } else {
-                    button.setIcon(null);
+                    label.setIcon(piece.getImagePath());
                 }
-                button.setBackground(Color.WHITE);
+
+                boardLabels[i][j] = label;
+                add(label);
             }
         }
-        repaint();
     }
-
-    public void highlightValidMoves(Set<Position> validMoves) {
-        for (Position pos : validMoves) {
-            boardButtons[pos.getX()][pos.getY()].setBackground(Color.YELLOW);
-        }
-    }
-    
-    public void addBoardClickListener(ActionListener listener) {
-        for (int i = 0; i < model.getBoardWidth(); i++) {
-            for (int j = 0; j < model.getBoardHeight(); j++) {
-                boardButtons[i][j].addActionListener(listener);
+    public void refreshBoard(ChessModel model) {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                Chesspiece piece = model.getPiece(i, j);
+                JLabel label = boardLabels[i][j];
+                label.setIcon(piece != null ? piece.getImagePath() : null);
             }
         }
     }
