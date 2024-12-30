@@ -97,4 +97,44 @@ public class ChessModel {
             }
         }
     }
+
+
+
+// Added Method: Move a piece and handle capturing
+public boolean movePiece(int fromCol, int fromRow, int toCol, int toRow) {
+    if (!isValidPosition(fromCol, fromRow) || !isValidPosition(toCol, toRow)) {
+        return false;
+    }
+
+    Chesspiece movingPiece = getPiece(fromCol, fromRow);
+    if (movingPiece == null) {
+        System.out.println("No piece at the selected position.");
+        return false;
+    }
+
+    Chesspiece targetPiece = getPiece(toCol, toRow);
+    if (targetPiece != null) {
+        if (targetPiece.getColor().equals(movingPiece.getColor())) {
+            System.out.println("Cannot move to a position occupied by your own piece.");
+            return false;
+        } else {
+            System.out.println("Capturing opponent's piece.");
+            board[toCol][toRow] = null; // Remove opponent's piece
+        }
+    }
+
+    // Move the piece
+    board[toCol][toRow] = movingPiece;
+    board[fromCol][fromRow] = null;
+
+    // Update the position of the moving piece
+    movingPiece.setPos(new Position(toCol, toRow));
+    System.out.println("Moved piece to (" + toCol + ", " + toRow + ")");
+    return true;
+  }
+
+// Added Method: Validate board positions
+   private boolean isValidPosition(int col, int row) {
+    return col >= 0 && row >= 0 && col < getBoardWidth() && row < getBoardHeight();
+   }
 }
