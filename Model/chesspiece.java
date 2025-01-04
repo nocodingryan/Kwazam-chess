@@ -24,10 +24,6 @@ public abstract class Chesspiece {
         return images;
     }
 
-    public Position getPosition() {
-        return position;
-    }
-
     public void setPos(Position pos) {
         this.position = pos;
     }

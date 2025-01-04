@@ -97,10 +97,7 @@ public class ChessModel {
             }
         }
     }
-
-
-
-// Added Method: Move a piece and handle capturing
+    // Added Method: Move a piece and handle capturing
 public boolean movePiece(int fromCol, int fromRow, int toCol, int toRow) {
     if (!isValidPosition(fromCol, fromRow) || !isValidPosition(toCol, toRow)) {
         return false;

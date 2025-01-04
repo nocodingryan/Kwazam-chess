@@ -11,6 +11,8 @@ public class Chessboard extends JFrame {
     private int height = 8; // Number of rows
     private int width = 5;  // Number of columns
 
+    public Chesspiece selectedPiece;
+    
     public Chessboard() {
         this.boardLabels = new JLabel[height][width];
         setTitle("Kwazam Chess");
