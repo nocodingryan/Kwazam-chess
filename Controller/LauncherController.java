@@ -4,7 +4,8 @@ import Model.*;
 import View.*;
 
 public class LauncherController {
-    private  ChessModel model;
+
+    private ChessModel model;
     private Chessboard view;
     private final Launcher launcher;
 
@@ -12,7 +13,7 @@ public class LauncherController {
         this.launcher = launcher;
         launcher.getLaunchButton().addActionListener(e -> handleLaunch());
     }
-    
+
     private void handleLaunch() {
         System.out.println("Launching...");
         this.view = new Chessboard();

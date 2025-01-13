@@ -6,6 +6,8 @@ import java.util.Set;
 
 public class Biz extends Chesspiece {
 
+    protected String name = "Biz";
+
     public Biz(Color color, String imagePath, Position pos) {
         super(color, imagePath, pos);
     }

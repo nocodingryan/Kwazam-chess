@@ -6,6 +6,8 @@ import java.util.Set;
 
 public class Tor extends Chesspiece {
 
+    protected String name = "Tor";
+
     public Tor(Color color, String imagePath, Position pos) {
         super(color, imagePath, pos);
     }

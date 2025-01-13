@@ -6,6 +6,8 @@ import java.util.Set;
 
 public class Xor extends Chesspiece {
 
+    protected String name = "Xor";
+
     public Xor(Color color, String imagePath, Position pos) {
         super(color, imagePath, pos);
     }

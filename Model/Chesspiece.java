@@ -1,4 +1,5 @@
 package Model;
+
 import java.awt.*;
 import java.util.*;
 import javax.swing.ImageIcon;
@@ -24,15 +25,24 @@ public abstract class Chesspiece {
         return images;
     }
 
+    public Position getPos() {
+        return position;
+    }
+
     public void setPos(Position pos) {
         this.position = pos;
     }
 
     public abstract Set<Position> ifValidMove(ChessModel cboard);
 
-    private ImageIcon resizeImageIcon(ImageIcon icon, int width, int height) {
+    private ImageIcon resizeImageIcon(ImageIcon icon, int width, int heightreal) {
         Image img = icon.getImage();
-        Image resizedImg = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        Image resizedImg = img.getScaledInstance(width, heightreal, Image.SCALE_SMOOTH);
         return new ImageIcon(resizedImg);
+    }
+
+    public String toString() {
+        Position pos = getPos(); // Assuming you have a getPos() method
+        return getColor() + " " + getClass().getSimpleName() + " at (" + pos.getX() + ", " + pos.getY() + ")";
     }
 }

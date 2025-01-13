@@ -19,7 +19,7 @@ public class Launcher extends JFrame {
 
         launchButton = new JButton("Play Kwazam Chess");
         frame.add(launchButton);
-        
+
         rulesButton = new JButton("Rules");
         frame.add(rulesButton);
         rulesButton.addActionListener(new ActionListener() {
@@ -45,6 +45,7 @@ public class Launcher extends JFrame {
         popupframe.add(new JScrollPane(rules), BorderLayout.NORTH);
         popupframe.setVisible(true);
     }
+
     public JButton getLaunchButton() {
         return launchButton;
     }

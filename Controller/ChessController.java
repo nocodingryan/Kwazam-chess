@@ -2,13 +2,17 @@ package Controller;
 
 import Model.*;
 import View.*;
+import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 
 public class ChessController {
 
     private ChessModel model;
     private Chessboard board;
     private Position selectedPos = null;
+    private JLabel draggedPieceLabel = null;
+    private ImageIcon draggedPieceIcon = null;
 
     public ChessController(ChessModel model, Chessboard board) {
         System.out.println("Loading ChessController..");
@@ -22,7 +26,9 @@ public class ChessController {
         board.addMouseMotionListener(inputHandler);
     }
 
+    // Handle drag-drop in board
     private class InputHandler extends MouseAdapter {
+
         private ChessModel model;
         private Chessboard board;
 
@@ -40,6 +46,22 @@ public class ChessController {
             Chesspiece piece = model.getPiece(col, row);
             if (piece != null) {
                 board.selectedPiece = piece;
+                draggedPieceIcon = piece.getImagePath();
+                draggedPieceLabel = new JLabel(draggedPieceIcon);
+                // Make the label non-opaque to see the board underneath
+                draggedPieceLabel.setOpaque(false);
+                // Add the label to the layered pane so it's on top
+                board.getLayeredPane().add(draggedPieceLabel, JLayeredPane.DRAG_LAYER);
+                // Set the initial position of the dragged label
+                Point p = SwingUtilities.convertPoint(board, e.getX(), e.getY(), board.getLayeredPane());
+                draggedPieceLabel.setBounds(p.x - draggedPieceIcon.getIconWidth() / 2, p.y - draggedPieceIcon.getIconHeight() / 2, draggedPieceIcon.getIconWidth(), draggedPieceIcon.getIconHeight());
+                board.repaint(); // Ensure the label is visible immediately
+
+                // Temporarily clear the icon from the original board label
+                JLabel originalLabel = board.boardLabels[row][col];
+                originalLabel.setIcon(null);
+                originalLabel.repaint();
+
                 System.out.println("Piece selected at: " + col + ", " + row);
             } else {
                 System.out.println("No piece selected.");
@@ -48,31 +70,64 @@ public class ChessController {
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            if (board.selectedPiece != null) {
-                int col = mapToBoardCoordinate(e.getX(), board.getWidth(), model.getBoardWidth());
-                int row = mapToBoardCoordinate(e.getY(), board.getHeight(), model.getBoardHeight());
-                Position targetPos = new Position(col, row);
-
-                if (model.movePiece(selectedPos.getX(), selectedPos.getY(), col, row)) {
-                    board.refreshBoard(model);
-                    selectedPos = targetPos; // Update selectedPos to the new position
-                }
+            if (draggedPieceLabel != null) {
+                Point p = SwingUtilities.convertPoint(board, e.getX(), e.getY(), board.getLayeredPane());
+                draggedPieceLabel.setLocation(p.x - draggedPieceIcon.getIconWidth() / 2, p.y - draggedPieceIcon.getIconHeight() / 2);
+                board.getLayeredPane().repaint(); // Repaint the layered pane
             }
         }
 
-        @Override
         public void mouseReleased(MouseEvent e) {
-            board.selectedPiece = null;
-            selectedPos = null;
-            System.out.println("Mouse released.");
+            if (board.selectedPiece != null && selectedPos != null) {
+                int col = mapToBoardCoordinate(e.getX(), board.getWidth(), model.getBoardWidth());
+                int row = mapToBoardCoordinate(e.getY(), board.getHeight(), model.getBoardHeight());
+
+                // Only attempt to move if the release position is different from the press position
+                if (col != selectedPos.getX() || row != selectedPos.getY()) {
+                    if (model.movePiece(selectedPos.getX(), selectedPos.getY(), col, row)) {
+                        board.refreshBoard(model);
+                    } else {
+                        // If the move is invalid, restore the icon to the original label
+                        board.boardLabels[selectedPos.getY()][selectedPos.getX()].setIcon(draggedPieceIcon);
+                        board.boardLabels[selectedPos.getY()][selectedPos.getX()].repaint();
+                    }
+                } else {
+                    // If the mouse was released on the same square, restore the icon
+                    board.boardLabels[selectedPos.getY()][selectedPos.getX()].setIcon(draggedPieceIcon);
+                    board.boardLabels[selectedPos.getY()][selectedPos.getX()].repaint();
+                }
+
+                // Remove the dragged piece label
+                if (draggedPieceLabel != null) {
+                    board.getLayeredPane().remove(draggedPieceLabel);
+                    draggedPieceLabel = null;
+                    draggedPieceIcon = null;
+                    board.getLayeredPane().repaint();
+                }
+
+                board.selectedPiece = null;
+                selectedPos = null;
+                System.out.println("Mouse released.");
+            } else {
+                // Clean up if no piece was selected
+                if (draggedPieceLabel != null) {
+                    board.getLayeredPane().remove(draggedPieceLabel);
+                    draggedPieceLabel = null;
+                    draggedPieceIcon = null;
+                    board.getLayeredPane().repaint();
+                }
+                board.selectedPiece = null;
+                selectedPos = null;
+                System.out.println("Mouse released without a piece selected or valid start position.");
+            }
         }
 
         /**
          * Maps a pixel coordinate to a board array index.
          *
-         * @param pixel       The pixel coordinate (x or y).
-         * @param dimension   The full width or height of the chessboard.
-         * @param boardSize   The number of columns or rows on the chessboard.
+         * @param pixel The pixel coordinate (x or y).
+         * @param dimension The full width or height of the chessboard.
+         * @param boardSize The number of columns or rows on the chessboard.
          * @return The board array index.
          */
         private int mapToBoardCoordinate(int pixel, int dimension, int boardSize) {

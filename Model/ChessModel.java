@@ -1,6 +1,7 @@
 package Model;
 
 import java.awt.*;
+import java.util.*;
 
 public class ChessModel {
 
@@ -35,70 +36,69 @@ public class ChessModel {
     }
 
     public int getBoardWidth() {
-        return board.length;
+        return board[0].length; // Number of columns
     }
 
     public int getBoardHeight() {
-        return board[0].length;
+        return board.length;    // Number of rows
     }
 
     public void setPiece(int col, int row, Chesspiece cp) {
-        if (cp != null && col >= 0 && row >= 0 && col < board.length && row < board[col].length) {
-            board[col][row] = cp;
+        if (cp != null && col >= 0 && row >= 0 && row < board.length && col < board[row].length) { // Corrected order
+            board[row][col] = cp;
         }
     }
 
     public Chesspiece getPiece(int col, int row) {
-        if (col >= 0 && row >= 0 && col < board.length && row < board[col].length) {
-            return board[col][row];
+        if (col >= 0 && row >= 0 && row < board.length && col < board[row].length) { // Corrected order
+            return board[row][col];
         }
         return null;
     }
 
     public void initializeChesspiece() {
         for (int col = 0; col < 5; col++) {
-            board[6][col] = new Ram(Color.BLUE, "/images/RamBlue.png", new Position(1, col));
+            board[6][col] = new Ram(Color.BLUE, "/images/RamBlue.png", new Position(col, 6)); // Keep position correct
             switch (col) {
                 case 0:
-                    board[7][col] = new Xor(Color.BLUE, "/images/XorBlue.png", new Position(0, col));
+                    board[7][col] = new Xor(Color.BLUE, "/images/XorBlue.png", new Position(col, 7));
                     break;
                 case 1:
-                    board[7][col] = new Biz(Color.BLUE, "/images/BizBlue.png", new Position(0, col));
+                    board[7][col] = new Biz(Color.BLUE, "/images/BizBlue.png", new Position(col, 7));
                     break;
                 case 2:
-                    board[7][col] = new Sau(Color.BLUE, "/images/SauBlue.png", new Position(0, col));
+                    board[7][col] = new Sau(Color.BLUE, "/images/SauBlue.png", new Position(col, 7));
                     break;
                 case 3:
-                    board[7][col] = new Biz(Color.BLUE, "/images/BizBlue.png", new Position(0, col));
+                    board[7][col] = new Biz(Color.BLUE, "/images/BizBlue.png", new Position(col, 7));
                     break;
                 case 4:
-                    board[7][col] = new Tor(Color.BLUE, "/images/TorBlue.png", new Position(0, col));
+                    board[7][col] = new Tor(Color.BLUE, "/images/TorBlue.png", new Position(col, 7));
                     break;
             }
         }
 
         for (int col = 0; col < 5; col++) {
-            board[1][col] = new Ram(Color.RED, "/images/Ram.png", new Position(6, col));
+            board[1][col] = new Ram(Color.RED, "/images/Ram.png", new Position(col, 1));
             switch (col) {
                 case 0:
-                    board[0][col] = new Tor(Color.BLUE, "/images/Tor.png", new Position(7, col));
+                    board[0][col] = new Tor(Color.RED, "/images/Tor.png", new Position(col, 0));
                     break;
                 case 1:
-                    board[0][col] = new Biz(Color.BLUE, "/images/Biz.png", new Position(7, col));
+                    board[0][col] = new Biz(Color.RED, "/images/Biz.png", new Position(col, 0));
                     break;
                 case 2:
-                    board[0][col] = new Sau(Color.BLUE, "/images/Sau.png", new Position(7, col));
+                    board[0][col] = new Sau(Color.RED, "/images/Sau.png", new Position(col, 0));
                     break;
                 case 3:
-                    board[0][col] = new Biz(Color.BLUE, "/images/Biz.png", new Position(7, col));
+                    board[0][col] = new Biz(Color.RED, "/images/Biz.png", new Position(col, 0));
                     break;
                 case 4:
-                    board[0][col] = new Xor(Color.BLUE, "/images/Xor.png", new Position(7, col));
+                    board[0][col] = new Xor(Color.RED, "/images/Xor.png", new Position(col, 0));
                     break;
             }
         }
     }
-    // Added Method: Move a piece and handle capturing
 
     public boolean movePiece(int fromCol, int fromRow, int toCol, int toRow) {
         if (!isValidPosition(fromCol, fromRow) || !isValidPosition(toCol, toRow)) {
@@ -106,8 +106,19 @@ public class ChessModel {
         }
 
         Chesspiece movingPiece = getPiece(fromCol, fromRow);
+        Set<Position> validMoves;
+        validMoves = movingPiece.ifValidMove(this);
+        System.out.println("Moving Piece: " + movingPiece);
+        System.out.println("Valid Moves: " + validMoves);
+        System.out.println("Target Position: (" + toCol + ", " + toRow + ")");
+
         if (movingPiece == null) {
             System.out.println("No piece at the selected position.");
+            return false;
+        }
+
+        if (!validMoves.contains(new Position(toCol, toRow))) {
+            System.out.println("Invalid move for this piece.");
             return false;
         }
 
@@ -118,22 +129,18 @@ public class ChessModel {
                 return false;
             } else {
                 System.out.println("Capturing opponent's piece.");
-                board[toCol][toRow] = null; // Remove opponent's piece
+                board[toRow][toCol] = null;
             }
         }
 
-        // Move the piece
-        board[toCol][toRow] = movingPiece;
-        board[fromCol][fromRow] = null;
-
-        // Update the position of the moving piece
+        board[toRow][toCol] = movingPiece;
+        board[fromRow][fromCol] = null;
         movingPiece.setPos(new Position(toCol, toRow));
         System.out.println("Moved piece to (" + toCol + ", " + toRow + ")");
         return true;
     }
 
-// Added Method: Validate board positions
     private boolean isValidPosition(int col, int row) {
-        return col >= 0 && row >= 0 && col < getBoardWidth() && row < getBoardHeight();
+        return col >= 0 && row >= 0 && row < getBoardHeight() && col < getBoardWidth();
     }
 }

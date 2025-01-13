@@ -6,6 +6,8 @@ import java.util.Set;
 
 public class Sau extends Chesspiece {
 
+    protected String name = "Sau";
+
     public Sau(Color color, String imagePath, Position pos) {
         super(color, imagePath, pos);
     }
@@ -17,7 +19,7 @@ public class Sau extends Chesspiece {
 
         int currentCol = position.getX();
         int currentRow = position.getY();
-        
+
         // Implement movement
         return validMoves;
     }

@@ -6,19 +6,48 @@ import java.util.Set;
 
 public class Ram extends Chesspiece {
 
+    protected String name = "Ram";
+    private int moveDirection;
+
     public Ram(Color color, String imagePath, Position pos) {
         super(color, imagePath, pos);
+        this.moveDirection = (color == Color.BLUE) ? -1 : 1;
     }
 
+    public int getMoveDirection() {
+        return moveDirection;
+    }
+
+    public void setMoveDirection(int moveDirection) {
+        this.moveDirection = moveDirection;
+    }
+
+    // Movement logic ONLY, actual moving or capturing will not be implemented here
     @Override
-    public Set<Position> ifValidMove(ChessModel cboard) {
+    public Set<Position> ifValidMove(ChessModel model) {
         Set<Position> validMoves = new HashSet<>();
-        int direction = (this.color == Color.BLUE) ? 1 : -1; // Blue moves down, Red moves up
+        int currentX = position.getX();
+        int currentY = position.getY();
+        System.out.println("Current X: " + currentX + " Current Y: " + currentY);
+        int nextY = currentY + moveDirection;
+        System.out.println("Next Y: " + nextY);
 
-        int currentCol = position.getX();
-        int currentRow = position.getY();
-
-        // Implement movement
+        if (nextY >= 0 && nextY < model.getBoardHeight()) {
+            System.out.println("Next column nothing there");
+            validMoves.add(new Position(currentX, nextY));
+        } else {
+            moveDirection *= -1;
+            nextY = currentY + moveDirection;
+            if (nextY >= 0 && nextY < model.getBoardHeight()) {
+                if (model.getPiece(currentX, nextY) == null) {
+                    validMoves.add(new Position(currentX, nextY));
+                }
+            }
+        }
         return validMoves;
+    }
+
+    public String getName() {
+        return name;
     }
 }
