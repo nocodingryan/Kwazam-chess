@@ -5,7 +5,7 @@ import java.util.*;
 
 public class ChessModel {
 
-    private Color currentPlayer;
+    protected  Color currentPlayer;
     private int round = 0;
     private Chesspiece[][] board;
 
@@ -23,12 +23,23 @@ public class ChessModel {
         return round;
     }
 
+    public void incRound() {
+        round++;
+    }
+
     public void setCurrentPlayer(Color currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
 
-    public Color getCurrentPlayer() {
+    public Color getCurrentColor() {
         return currentPlayer;
+    }
+
+    public String getCurrentPlayer() {
+        if (currentPlayer == Color.BLUE)
+            return "Blue";
+        else
+            return "Red";
     }
 
     public Chesspiece[][] getBoard() {
@@ -101,10 +112,9 @@ public class ChessModel {
     }
 
     public boolean movePiece(int fromCol, int fromRow, int toCol, int toRow) {
-        if (!isValidPosition(fromCol, fromRow) || !isValidPosition(toCol, toRow)) {
+        if (!checkBorder(fromCol, fromRow) || !checkBorder(toCol, toRow)) {
             return false;
         }
-
         Chesspiece movingPiece = getPiece(fromCol, fromRow);
         Set<Position> validMoves;
         validMoves = movingPiece.ifValidMove(this);
@@ -135,7 +145,18 @@ public class ChessModel {
         return true;
     }
 
-    private boolean isValidPosition(int col, int row) {
+    private boolean checkBorder(int col, int row) {
         return col >= 0 && row >= 0 && row < getBoardHeight() && col < getBoardWidth();
+    }
+
+    public void processRound() {
+        incRound();
+        if (getRound() % 2 == 0){
+            setCurrentPlayer(Color.BLUE);
+            System.out.println(getCurrentPlayer()+ "'s Turn");
+        } else {
+            setCurrentPlayer(Color.RED);
+            System.out.println(getCurrentPlayer()+ "'s Turn");
+        }
     }
 }

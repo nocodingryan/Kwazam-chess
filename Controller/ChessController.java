@@ -42,34 +42,34 @@ public class ChessController {
 
         @Override
         public void mousePressed(MouseEvent e) {
-            clearHighlighting(); // Clear any previous highlighting
-
+            clearHighlighting();
             int col = mapToBoardCoordinate(e.getX(), board.getWidth(), model.getBoardWidth());
             int row = mapToBoardCoordinate(e.getY(), board.getHeight(), model.getBoardHeight());
             selectedPos = new Position(col, row);
-
             Chesspiece piece = model.getPiece(col, row);
             if (piece != null) {
-                board.selectedPiece = piece;
-                draggedPieceIcon = piece.getImagePath();
-                draggedPieceLabel = new JLabel(draggedPieceIcon);
-                draggedPieceLabel.setOpaque(false);
-                board.getLayeredPane().add(draggedPieceLabel, JLayeredPane.DRAG_LAYER); // Add dragged piece to LayeredPane
-                // Set the initial position of the dragged label
-                Point p = SwingUtilities.convertPoint(board, e.getX(), e.getY(), board.getLayeredPane());
-                draggedPieceLabel.setBounds(p.x - draggedPieceIcon.getIconWidth() / 2, p.y - draggedPieceIcon.getIconHeight() / 2, draggedPieceIcon.getIconWidth(), draggedPieceIcon.getIconHeight());
-                board.repaint(); // Ensure the label is visible immediately
+                if (piece.getColor() == model.getCurrentColor()) {
+                    board.selectedPiece = piece;
+                    draggedPieceIcon = piece.getImagePath();
+                    draggedPieceLabel = new JLabel(draggedPieceIcon);
+                    draggedPieceLabel.setOpaque(false);
+                    board.getLayeredPane().add(draggedPieceLabel, JLayeredPane.DRAG_LAYER); // Add dragged piece to LayeredPane
+                    // Set the initial position of the dragged label
+                    Point p = SwingUtilities.convertPoint(board, e.getX(), e.getY(), board.getLayeredPane());
+                    draggedPieceLabel.setBounds(p.x - draggedPieceIcon.getIconWidth() / 2, p.y - draggedPieceIcon.getIconHeight() / 2, draggedPieceIcon.getIconWidth(), draggedPieceIcon.getIconHeight());
+                    board.repaint(); // Ensure the label is visible immediately
+                    // Temporarily clear the icon from the original board label
+                    JLabel pieceOnBoard = board.boardLabels[row][col];
+                    pieceOnBoard.setIcon(null);
+                    pieceOnBoard.repaint();
 
-                // Temporarily clear the icon from the original board label
-                JLabel pieceOnBoard = board.boardLabels[row][col];
-                pieceOnBoard.setIcon(null);
-                pieceOnBoard.repaint();
+                    System.out.println("Piece selected at: " + col + ", " + row);
 
-                System.out.println("Piece selected at: " + col + ", " + row);
-
-                // Highlight valid moves when pressed
-                highlightValidMoves(piece);
-
+                    // Highlight valid moves when pressed
+                    highlightValidMoves(piece);
+                } else {
+                    System.out.println("Cannot move enemy piece");
+                }
             } else {
                 System.out.println("No piece selected.");
             }
@@ -98,6 +98,7 @@ public class ChessController {
                 }
             }
         }
+
         @Override
         public void mouseDragged(MouseEvent e) {
             if (draggedPieceLabel != null) {
@@ -107,6 +108,7 @@ public class ChessController {
             }
         }
 
+        @Override
         public void mouseReleased(MouseEvent e) {
             clearHighlighting(); // Clear highlighting when mouse released
             if (board.selectedPiece != null && selectedPos != null) {
@@ -117,6 +119,7 @@ public class ChessController {
                 if (col != selectedPos.getX() || row != selectedPos.getY()) {
                     if (model.movePiece(selectedPos.getX(), selectedPos.getY(), col, row)) {
                         board.refreshBoard(model);
+                        model.processRound();
                     } else {
                         // If the move is invalid, restore the icon to the original label
                         board.boardLabels[selectedPos.getY()][selectedPos.getX()].setIcon(draggedPieceIcon);
@@ -138,9 +141,8 @@ public class ChessController {
 
                 board.selectedPiece = null;
                 selectedPos = null;
-                System.out.println("Mouse released.");
             } else {
-                // Clean up if no piece was selected
+                // If no piece was selected
                 if (draggedPieceLabel != null) {
                     board.getLayeredPane().remove(draggedPieceLabel);
                     draggedPieceLabel = null;
@@ -149,7 +151,6 @@ public class ChessController {
                 }
                 board.selectedPiece = null;
                 selectedPos = null;
-                System.out.println("Mouse released without a piece selected or valid start position.");
             }
         }
 

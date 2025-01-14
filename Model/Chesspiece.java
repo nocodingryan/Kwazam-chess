@@ -20,6 +20,9 @@ public abstract class Chesspiece {
     public Color getColor() {
         return color;
     }
+    private String getColorString() {     
+        return (color == Color.BLUE)? "Blue" : "Red";
+    }
 
     public ImageIcon getImagePath() {
         return images;
@@ -44,6 +47,6 @@ public abstract class Chesspiece {
     @Override
     public String toString() {
         Position pos = getPos();
-        return getColor() + " " + getClass().getSimpleName() + " at (" + pos.getX() + ", " + pos.getY() + ")";
+        return getColorString() + " " + getClass().getSimpleName() + " at (" + pos.getX() + ", " + pos.getY() + ")";
     }
 }
