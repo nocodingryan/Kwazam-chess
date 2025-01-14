@@ -4,7 +4,9 @@ import Model.*;
 import View.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Set;
 import javax.swing.*;
+import javax.swing.border.Border;
 
 public class ChessController {
 
@@ -13,6 +15,7 @@ public class ChessController {
     private Position selectedPos = null;
     private JLabel draggedPieceLabel = null;
     private ImageIcon draggedPieceIcon = null;
+    private static final Border border = BorderFactory.createEmptyBorder();
 
     public ChessController(ChessModel model, Chessboard board) {
         System.out.println("Loading ChessController..");
@@ -39,6 +42,8 @@ public class ChessController {
 
         @Override
         public void mousePressed(MouseEvent e) {
+            clearHighlighting(); // Clear any previous highlighting
+
             int col = mapToBoardCoordinate(e.getX(), board.getWidth(), model.getBoardWidth());
             int row = mapToBoardCoordinate(e.getY(), board.getHeight(), model.getBoardHeight());
             selectedPos = new Position(col, row);
@@ -48,26 +53,51 @@ public class ChessController {
                 board.selectedPiece = piece;
                 draggedPieceIcon = piece.getImagePath();
                 draggedPieceLabel = new JLabel(draggedPieceIcon);
-                // Make the label non-opaque to see the board underneath
                 draggedPieceLabel.setOpaque(false);
-                // Add the label to the layered pane so it's on top
-                board.getLayeredPane().add(draggedPieceLabel, JLayeredPane.DRAG_LAYER);
+                board.getLayeredPane().add(draggedPieceLabel, JLayeredPane.DRAG_LAYER); // Add dragged piece to LayeredPane
                 // Set the initial position of the dragged label
                 Point p = SwingUtilities.convertPoint(board, e.getX(), e.getY(), board.getLayeredPane());
                 draggedPieceLabel.setBounds(p.x - draggedPieceIcon.getIconWidth() / 2, p.y - draggedPieceIcon.getIconHeight() / 2, draggedPieceIcon.getIconWidth(), draggedPieceIcon.getIconHeight());
                 board.repaint(); // Ensure the label is visible immediately
 
                 // Temporarily clear the icon from the original board label
-                JLabel originalLabel = board.boardLabels[row][col];
-                originalLabel.setIcon(null);
-                originalLabel.repaint();
+                JLabel pieceOnBoard = board.boardLabels[row][col];
+                pieceOnBoard.setIcon(null);
+                pieceOnBoard.repaint();
 
                 System.out.println("Piece selected at: " + col + ", " + row);
+
+                // Highlight valid moves when pressed
+                highlightValidMoves(piece);
+
             } else {
                 System.out.println("No piece selected.");
             }
         }
 
+        private void highlightValidMoves(Chesspiece piece) {
+            if (piece != null) {
+                Set<Position> validMoves = piece.ifValidMove(model);
+                for (Position move : validMoves) {
+                    int row = move.getY();
+                    int col = move.getX();
+                    Chesspiece checkEnemy = model.getPiece(col, row);
+                    if (checkEnemy != null) {
+                        board.boardLabels[row][col].setBorder(BorderFactory.createLineBorder(Color.RED, 3));
+                    } else {
+                        board.boardLabels[row][col].setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
+                    }
+                }
+            }
+        }
+
+        private void clearHighlighting() {
+            for (int r = 0; r < model.getBoardHeight(); r++) {
+                for (int c = 0; c < model.getBoardWidth(); c++) {
+                    board.boardLabels[r][c].setBorder(border); // Reset to default border
+                }
+            }
+        }
         @Override
         public void mouseDragged(MouseEvent e) {
             if (draggedPieceLabel != null) {
@@ -78,6 +108,7 @@ public class ChessController {
         }
 
         public void mouseReleased(MouseEvent e) {
+            clearHighlighting(); // Clear highlighting when mouse released
             if (board.selectedPiece != null && selectedPos != null) {
                 int col = mapToBoardCoordinate(e.getX(), board.getWidth(), model.getBoardWidth());
                 int row = mapToBoardCoordinate(e.getY(), board.getHeight(), model.getBoardHeight());

@@ -112,11 +112,6 @@ public class ChessModel {
         System.out.println("Valid Moves: " + validMoves);
         System.out.println("Target Position: (" + toCol + ", " + toRow + ")");
 
-        if (movingPiece == null) {
-            System.out.println("No piece at the selected position.");
-            return false;
-        }
-
         if (!validMoves.contains(new Position(toCol, toRow))) {
             System.out.println("Invalid move for this piece.");
             return false;

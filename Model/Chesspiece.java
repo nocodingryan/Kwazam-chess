@@ -41,8 +41,9 @@ public abstract class Chesspiece {
         return new ImageIcon(resizedImg);
     }
 
+    @Override
     public String toString() {
-        Position pos = getPos(); // Assuming you have a getPos() method
+        Position pos = getPos();
         return getColor() + " " + getClass().getSimpleName() + " at (" + pos.getX() + ", " + pos.getY() + ")";
     }
 }

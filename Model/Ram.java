@@ -28,13 +28,19 @@ public class Ram extends Chesspiece {
         Set<Position> validMoves = new HashSet<>();
         int currentX = position.getX();
         int currentY = position.getY();
-        System.out.println("Current X: " + currentX + " Current Y: " + currentY);
         int nextY = currentY + moveDirection;
+        Chesspiece targetPiece = model.getPiece(currentX, nextY);
+        System.out.println("Current X: " + currentX + " Current Y: " + currentY);
         System.out.println("Next Y: " + nextY);
 
         if (nextY >= 0 && nextY < model.getBoardHeight()) {
-            System.out.println("Next column nothing there");
-            validMoves.add(new Position(currentX, nextY));
+            System.out.println("Next column within borders");
+            if (targetPiece != null) {
+                if (!targetPiece.getColor().equals(getColor()))
+                    validMoves.add(new Position(currentX, nextY));
+            } else {
+                validMoves.add(new Position(currentX, nextY));
+            }
         } else {
             moveDirection *= -1;
             nextY = currentY + moveDirection;
