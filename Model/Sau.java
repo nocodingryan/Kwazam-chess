@@ -12,15 +12,35 @@ public class Sau extends Chesspiece {
         super(color, imagePath, pos);
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public Set<Position> ifValidMove(ChessModel cboard) {
         Set<Position> validMoves = new HashSet<>();
-        int direction = (this.color == Color.BLUE) ? 1 : -1; // Blue moves down, Red moves up
-
-        int currentCol = position.getX();
-        int currentRow = position.getY();
-
+        int currentX = position.getX();
+        int currentY = position.getY();
+        
         // Implement movement
+        int[][] moveSets = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {-1, 1}, {-1, -1}, {1, -1}, {1, 1}};
+
+        for (int[] moveSet : moveSets) {
+            int targetX = currentX + moveSet[0];
+            int targetY = currentY + moveSet[1];
+            
+            if (targetX >= 0 && targetY >= 0 && targetX < cboard.getBoardWidth() && targetY < cboard.getBoardHeight()) {
+                Chesspiece target = cboard.getPiece(targetX, targetY);
+                if (target != null) {
+                    if (!target.getColor().equals(getColor())) {
+                        validMoves.add(new Position(targetX, targetY));
+                    }
+                } else {
+                    validMoves.add(new Position(targetX, targetY));
+                }
+            }
+        }
+        System.out.println("Valid moves for " + this + ": " + validMoves);
         return validMoves;
     }
 }
