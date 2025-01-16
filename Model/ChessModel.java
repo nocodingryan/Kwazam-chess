@@ -25,6 +25,7 @@ public class ChessModel {
 
     public void incRound() {
         round++;
+        transPiece();
     }
 
     public void setCurrentPlayer(Color currentPlayer) {
@@ -157,6 +158,38 @@ public class ChessModel {
         } else {
             setCurrentPlayer(Color.RED);
             System.out.println(getCurrentPlayer()+ "'s Turn");
+        }
+    }
+    public void transPiece() {
+        if(round % 4 == 3) {
+            for (int row = 0; row < board.length; row++) {
+                for (int col = 0; col < board[row].length; col++) {
+                    Chesspiece piece = board[row][col];
+                    if (piece != null){
+                        Color tempColor;
+                        if (piece.getClass().getSimpleName().equals("Tor")){
+                            
+                            tempColor = piece.getColor();
+                            board[row][col] = null;
+                            if (tempColor == Color.RED) {
+                                board[row][col] = new Xor(Color.RED, "/images/Xor.png", new Position(col, row));
+                            }
+                            else {
+                                board[row][col] = new Xor(Color.BLUE, "/images/XorBlue.png", new Position(col, row));
+                            }
+                        } else if (piece.getClass().getSimpleName().equals("Xor")) {
+                            tempColor = piece.getColor();
+                            board[row][col] = null;
+                            if (tempColor == Color.RED) {
+                                board[row][col] = new Tor(Color.RED, "/images/Tor.png", new Position(col, row));
+                            }
+                            else {
+                                board[row][col] = new Tor(Color.BLUE, "/images/TorBlue.png", new Position(col, row));
+                            }
+                        }
+                        }
+                }
+            }
         }
     }
 }

@@ -14,14 +14,6 @@ public class Ram extends Chesspiece {
         this.moveDirection = (color == Color.BLUE) ? -1 : 1;
     }
 
-    public int getMoveDirection() {
-        return moveDirection;
-    }
-
-    public void setMoveDirection(int moveDirection) {
-        this.moveDirection = moveDirection;
-    }
-
     // Movement logic ONLY, actual moving or capturing will not be implemented here
     @Override
     public Set<Position> ifValidMove(ChessModel model) {
@@ -51,9 +43,5 @@ public class Ram extends Chesspiece {
             }
         }
         return validMoves;
-    }
-
-    public String getName() {
-        return name;
     }
 }

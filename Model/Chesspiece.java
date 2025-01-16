@@ -5,7 +5,7 @@ import java.util.*;
 import javax.swing.ImageIcon;
 
 public abstract class Chesspiece {
-
+    protected String name;
     protected ImageIcon images;
     protected Position position;
     protected Color color;
