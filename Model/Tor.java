@@ -59,8 +59,4 @@ public class Tor extends Chesspiece {
     
         return validMoves;
     }   
-    
-    public String getName() {
-        return name;
-    }
 }

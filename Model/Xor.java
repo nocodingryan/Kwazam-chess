@@ -58,20 +58,4 @@ public class Xor extends Chesspiece {
     
         return validMoves;
     }
-
-    public void plusTurns() {
-        turn++;
-        if(turn >= 2){
-            TransTor();
-        }
-    }
-    
-    private void TransTor() {
-        this.name = "Tor";
-        System.out.println("The Xor piece has transformed into Tor piece.");
-    }
-    
-    public String getName() {
-        return name;
-    }
 }
